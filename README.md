@@ -1,0 +1,1 @@
+QuickBid automates the entire RFP lifecycle — from scraping and summarizing tenders to matching products, generating pricing, and submitting polished proposals with one click. Powered by AI and a modular agent architecture for speed, accuracy, and efficiency.
