@@ -1,0 +1,115 @@
+#root {
+  /* Base backgrounds */
+ --background: 40 33% 97%;
+    --foreground: 200 30% 15%;
+
+  /* Primary (Blue) */
+  --primary: 217 100% 56%;          /* #1B76FF */
+  --primary-foreground: 0 0% 100%;  /* white */
+
+  /* Secondary (Green) */
+  --secondary: 152 90% 39%;         /* #0BB96D */
+  --secondary-foreground: 0 0% 100%;
+
+  /* Accent (Orange) */
+  --accent: 14 99% 57%;             /* #FE4A22 */
+  --accent-foreground: 0 0% 100%;
+/* Cards - Pure white */
+    --card: 0 0% 100%;
+    --card-foreground: 200 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 30% 15%;
+  /* Destructive */
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* UI neutrals */
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 10%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 10%;
+
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 40%;
+
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  --ring: 217 100% 56%;
+
+  --radius: 0.5rem;
+
+  /* Chart colors (optional) */
+  --chart-1: 217 100% 56%; /* Blue */
+  --chart-2: 14 99% 57%;   /* Orange */
+  --chart-3: 152 90% 39%;  /* Green */
+  --chart-4: 0 0% 100%;    /* White */
+  --chart-5: 0 0% 10%;     /* Black-ish UI */
+}
+
+/* Dark mode */
+.dark {
+ --background: 200 30% 8%;
+    --foreground: 40 33% 97%;
+
+    --card: 200 25% 12%;
+    --card-foreground: 40 33% 97%;
+
+    --popover: 200 25% 12%;
+    --popover-foreground: 40 33% 97%;
+
+  --muted: 0 0% 20%;
+  --muted-foreground: 0 0% 70%;
+
+  --border: 0 0% 20%;
+  --input: 0 0% 20%;
+  --ring: 217 100% 56%;
+
+  /* Keep your brand colors consistent in dark mode */
+  --primary: 217 100% 56%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 152 90% 39%;
+  --secondary-foreground: 0 0% 100%;
+
+  --accent: 14 99% 57%;
+  --accent-foreground: 0 0% 100%;
+}
+
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
