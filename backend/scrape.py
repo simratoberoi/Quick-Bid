@@ -1,33 +1,61 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-from config import RFP_LISTING_URL
+from config import RFP_LISTING_URL, BASE_URL
 
 def safe_text(element):
-    return element.text.strip() if element else ""
+    """Safely extract text from BeautifulSoup element"""
+    return element.get_text(strip=True) if element else ""
 
 def scrape_rfps():
-    response = requests.get(RFP_LISTING_URL)
-    soup = BeautifulSoup(response.text, "lxml")
+    """Scrape RFP listings from the procurement portal"""
+    try:
+        response = requests.get(RFP_LISTING_URL)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "lxml")
 
-    rfp_cards = soup.select(".rfp-card")
+        rfp_cards = soup.select(".rfp-card")
+        rfp_data = []
 
-    rfp_data = []
+        for card in rfp_cards:
+            # Basic info
+            title = safe_text(card.select_one(".rfp-title"))
+            rfp_id = safe_text(card.select_one(".rfp-id"))
+            status = safe_text(card.select_one(".status-badge"))
+            
+            # Organization (first meta-header-value)
+            meta_values = card.select(".meta-header-value")
+            organization = safe_text(meta_values[0]) if len(meta_values) > 0 else ""
+            issue_date = safe_text(meta_values[1]) if len(meta_values) > 1 else ""
+            deadline = safe_text(meta_values[2]) if len(meta_values) > 2 else ""
+            
+            # Description - FIXED SELECTOR
+            description = safe_text(card.select_one(".description-text"))
+            
+            # Additional info from info-grid
+            info_values = card.select(".info-value")
+            department = safe_text(info_values[0]) if len(info_values) > 0 else ""
+            category = safe_text(info_values[1]) if len(info_values) > 1 else ""
 
-    for card in rfp_cards:
-        title = safe_text(card.select_one(".rfp-title"))
-        rfp_id = safe_text(card.select_one(".rfp-id"))
-        status = safe_text(card.select_one(".status-badge"))
-        desc = safe_text(card.select_one(".rfp-description"))
+            rfp_data.append({
+                "rfp_id": rfp_id,
+                "title": title,
+                "status": status,
+                "organization": organization,
+                "issue_date": issue_date,
+                "deadline": deadline,
+                "department": department,
+                "category": category,
+                "description": description,
+                "requirements": ""  # Initialize empty, will be populated if needed
+            })
 
-        rfp_data.append({
-            "rfp_id": rfp_id,
-            "title": title,
-            "status": status,
-            "description": desc
-        })
-
-    df = pd.DataFrame(rfp_data)
-    df.to_csv("data/scraped_rfps.csv", index=False)
-
-    return df
+        df = pd.DataFrame(rfp_data)
+        df.to_csv("scraped_rfps.csv", index=False)
+        
+        print(f"✓ Successfully scraped {len(rfp_data)} RFPs")
+        return df
+        
+    except Exception as e:
+        print(f"✗ Scraping failed: {str(e)}")
+        return None
