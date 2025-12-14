@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Search, Filter, RefreshCw, AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Search, Filter, RefreshCw, AlertCircle, Package } from "lucide-react";
 
 const getPriorityStyles = (priority) => {
   if (priority === "High") return "bg-red-100 text-red-700";
@@ -12,6 +13,7 @@ const NewIncoming = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   const BACKEND_URL = "http://127.0.0.1:5000";
 
@@ -45,6 +47,11 @@ const NewIncoming = () => {
   useEffect(() => {
     fetchNewIncoming();
   }, []);
+
+  // Navigate to matched products page
+  const handleViewMatches = (rfpId) => {
+    navigate(`/rfps/${rfpId}/matched-products`);
+  };
 
   // Filter data based on search
   const filteredData = rfpData.filter((rfp) => {
@@ -154,7 +161,7 @@ const NewIncoming = () => {
                 <th className="px-6 py-4 text-center font-semibold">
                   Priority
                 </th>
-                <th className="px-6 py-4 text-center font-semibold">Action</th>
+                <th className="px-6 py-4 text-center font-semibold">Actions</th>
               </tr>
             </thead>
 
@@ -201,9 +208,18 @@ const NewIncoming = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <button className="px-4 py-2 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 transition font-medium">
-                      Generate Proposal
-                    </button>
+                    <div className="flex items-center justify-center gap-2">
+                      <button 
+                        onClick={() => handleViewMatches(rfp.rfp_id)}
+                        className="px-3 py-2 bg-purple-600 text-white text-xs rounded-md hover:bg-purple-700 transition font-medium flex items-center gap-1"
+                      >
+                        <Package size={14} />
+                        View Matches
+                      </button>
+                      <button className="px-3 py-2 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 transition font-medium">
+                        Generate Proposal
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -13,6 +13,7 @@ import NewIncoming from "./pages/NewIncoming";
 import ProductCatalogue from "./pages/productCatalogue";
 import PricingCatalogue from "./pages/pricingCatalogue";
 import NewProposal from "./pages/proposalGeneration";
+import MatchedProducts from "./pages/matchedProducts";
 
 import "./index.css";
 import "./App.css";
@@ -34,6 +35,8 @@ const App = () => (
           <Route path="/productCatalogue" element={<ProductCatalogue />} />
           <Route path="/pricingCatalogue" element={<PricingCatalogue />} />
           <Route path="/proposalGeneration" element={<NewProposal />} />
+        <Route path="/new-incoming" element={<NewIncoming />} />
+  <Route path="/rfps/:rfpId/matched-products" element={<MatchedProducts />} />
 
           {/* 404 must stay at the bottom */}
           <Route path="*" element={<NotFound />} />

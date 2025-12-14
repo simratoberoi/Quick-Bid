@@ -462,6 +462,144 @@ def dashboard_rfps():
             "data": []
         }), 500
 
+        # --------------------------------------------------------
+# Matched Products for Specific RFP
+# --------------------------------------------------------
+@app.route("/rfps/<rfp_id>/matched-products", methods=["GET"])
+def get_matched_products(rfp_id):
+   """
+    Get top 3 matched products for a specific RFP
+    """
+    try:
+        print(f"\n[MATCHED-PRODUCTS] Fetching matches for RFP: {rfp_id}")
+        
+        # 1. Load scraped RFPs
+        try:
+            scraped_df = pd.read_csv("scraped_rfps.csv")
+        except FileNotFoundError:
+            # If no saved file, scrape fresh
+            scraped_df = scrape_rfps()
+            if scraped_df is None or scraped_df.empty:
+                return jsonify({
+                    "success": False,
+                    "error": "No RFPs found"
+                }), 404
+        
+        # 2. Find the specific RFP
+        rfp_row = scraped_df[scraped_df['rfp_id'] == rfp_id]
+        
+        if rfp_row.empty:
+            return jsonify({
+                "success": False,
+                "error": f"RFP with ID '{rfp_id}' not found"
+            }), 404
+        
+        # 3. Load product catalogue
+        try:
+            catalogue_df = pd.read_csv("product_catalogue_rows.csv")
+        except FileNotFoundError:
+            return jsonify({
+                "success": False,
+                "error": "Product catalogue not found"
+            }), 500
+        
+        # 4. Prepare text for matching
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.metrics.pairwise import cosine_similarity
+        
+        # Build RFP combined text
+        rfp_text = (
+            str(rfp_row.iloc[0].get("title", "")) + " " +
+            str(rfp_row.iloc[0].get("description", "")) + " " +
+            str(rfp_row.iloc[0].get("requirements", "")) + " " +
+            str(rfp_row.iloc[0].get("category", ""))
+        )
+        
+        # Build catalogue combined text
+        catalogue_df["combined_text"] = (
+            catalogue_df["product_name"].fillna("").astype(str) + " " +
+            catalogue_df["category"].fillna("").astype(str) + " " +
+            catalogue_df["conductor_material"].fillna("").astype(str) + " " +
+            catalogue_df["standard_iec"].fillna("").astype(str) + " " +
+            catalogue_df["conductor_size_sqmm"].fillna("").astype(str) + " sqmm " +
+            catalogue_df["voltage_rating"].fillna("").astype(str) + " kV"
+        )
+        
+        # 5. Calculate similarity scores
+        vectorizer = TfidfVectorizer(
+            ngram_range=(1, 2),
+            min_df=1,
+            max_df=0.95
+        )
+        
+        tfidf_catalogue = vectorizer.fit_transform(catalogue_df["combined_text"])
+        tfidf_rfp = vectorizer.transform([rfp_text])
+        
+        similarity_scores = cosine_similarity(tfidf_rfp, tfidf_catalogue)[0]
+        
+        # 6. Get top 3 matches only
+        top_n = 3  # Changed from 10 to 3
+        top_indices = similarity_scores.argsort()[-top_n:][::-1]
+        top_scores = similarity_scores[top_indices]
+        
+        # 7. Build matched products list
+        matched_products = []
+        for idx, score in zip(top_indices, top_scores):
+            product = catalogue_df.iloc[idx]
+            match_percent = round(score * 100, 2)
+            
+            # Assign priority
+            if match_percent > 50:
+                priority = "High"
+            elif match_percent > 30:
+                priority = "Medium"
+            else:
+                priority = "Low"
+            
+            matched_products.append({
+                "sku": str(product.get("sku", "")),
+                "product_name": str(product.get("product_name", "")),
+                "category": str(product.get("category", "")),
+                "conductor_material": str(product.get("conductor_material", "N/A")),
+                "conductor_size_sqmm": str(product.get("conductor_size_sqmm", "N/A")),
+                "voltage_rating": str(product.get("voltage_rating", "N/A")),
+                "standard_iec": str(product.get("standard_iec", "N/A")),
+                "unit_price": float(product.get("unit_price", 0)),
+                "test_price": float(product.get("test_price", 0)),
+                "match_percent": match_percent,
+                "priority": priority
+            })
+        
+        # 8. Build RFP details
+        rfp_details = {
+            "rfp_id": str(rfp_row.iloc[0].get("rfp_id", "")),
+            "title": str(rfp_row.iloc[0].get("title", "")),
+            "description": str(rfp_row.iloc[0].get("description", "")),
+            "organization": str(rfp_row.iloc[0].get("organization", "")),
+            "department": str(rfp_row.iloc[0].get("department", "")),
+            "category": str(rfp_row.iloc[0].get("category", "")),
+            "deadline": fix_date(rfp_row.iloc[0].get("deadline", "")),
+            "status": str(rfp_row.iloc[0].get("status", ""))
+        }
+        
+        print(f"✓ Found {len(matched_products)} matched products for RFP {rfp_id}")
+        
+        return jsonify({
+            "success": True,
+            "rfp": rfp_details,
+            "matched_products": matched_products,
+            "total_matches": len(matched_products)
+        })
+        
+    except Exception as e:
+        import traceback
+        print(f"✗ Error in /rfps/{rfp_id}/matched-products: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }), 500
+
 # --------------------------------------------------------
 # Local Server
 # --------------------------------------------------------
