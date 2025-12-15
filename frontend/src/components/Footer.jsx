@@ -35,12 +35,13 @@ const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
-                <span className="text-gray-900 font-bold text-sm">R</span>
-              </div>
-              <span className="font-semibold text-xl text-white">RFPro</span>
-            </Link>
+            
+
+            
+            
+            
+              <span className="font-semibold text-xl text-white">QuickBid</span>
+          
             <p className="text-gray-400 mb-6 max-w-sm">
               Automate your RFP workflow and win more deals with AI-powered proposal management.
             </p>
@@ -80,7 +81,7 @@ const Footer = () => {
 
         <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} RFPro. All rights reserved.
+            © {new Date().getFullYear()} QuickBid. All rights reserved.
           </p>
           <p className="text-gray-500 text-sm">
             Made with precision for proposal teams worldwide.
