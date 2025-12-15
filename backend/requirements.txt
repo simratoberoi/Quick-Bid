@@ -7,3 +7,4 @@ lxml
 scikit-learn
 certifi
 python-dotenv
+gunicorn
