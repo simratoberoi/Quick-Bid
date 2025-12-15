@@ -114,7 +114,7 @@ const Dashboard = () => {
       }
     } catch (err) {
       setError(
-        `Connection error: ${err.message}. Make sure Flask backend is running on port 5000.`
+        `Connection error: ${err.message}.Connection error: Unable to reach backend service.`
       );
       console.error("Fetch error:", err);
       setRfpData([]);
@@ -202,7 +202,7 @@ const Dashboard = () => {
         }
       } catch (err) {
         setError(
-          `Connection error: ${err.message}. Make sure Flask backend is running on port 5000.`
+          `Connection error: ${err.message}. Unable to reach backend service.`
         );
         console.error("Fetch error:", err);
       } finally {
